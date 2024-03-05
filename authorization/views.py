@@ -1,39 +1,42 @@
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
-from .forms import LoginForm, UserCreationForm
+from .forms import LoginForm, TeacherCreationForm
 from django.contrib.auth.models import User
+from .models import Teacher
 
 
-
-def login_view(request):
+def login_teacher(request):
     if request.method == 'POST':
-        form = LoginForm(request.POST)
+        form = TeacherCreationForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(username=username, password=password)
             if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return redirect('home')  # Замените 'home' на URL вашей домашней страницы
-                else:
-                    return render(request, 'login.html', {'error_message': 'Ваш аккаунт заблокирован'})
+                login(request, user)
+                return redirect('success_page')  # Перенаправляем на страницу успешной авторизации
             else:
-                return render(request, 'login.html', {'error_message': 'Неверное имя пользователя или пароль'})
+                # Обработка ошибки авторизации
+                return render(request, 'login.html', {'form': form, 'error_message': 'Неверные учетные данные'})
     else:
-        form = LoginForm()
+        form = TeacherCreationForm()
+
     return render(request, 'login.html', {'form': form})
 
 
-def register(request):
+def register_teacher(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = TeacherCreationForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            User.objects.create(username=username, email=email, password=password)
-            return redirect('login')
+            school = form.cleaned_data['school']
+            teacher = Teacher(username=username, email=email, school=school)
+            teacher.set_password(password)  # Устанавливаем пароль с использованием метода set_password
+            teacher.save()
+            return redirect('home')  # Перенаправляем на страницу успешной регистрации
     else:
-        form = UserCreationForm()
+        form = TeacherCreationForm()
+
     return render(request, 'register.html', {'form': form})

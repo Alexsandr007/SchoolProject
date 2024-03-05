@@ -31,18 +31,29 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+class School(models.Model):
+    name = models.CharField(max_length=150, unique=True)
+    address = models.CharField(max_length=150, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Teacher(AbstractBaseUser):
     username = models.CharField(max_length=150, unique=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=128)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True, blank=True)
+    school = models.ForeignKey(School, on_delete=models.CASCADE)
 
     objects = UserManager()
 
     USERNAME_FIELD = 'username'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = ['email']
+
+    def __str__(self):
+        return self.username
 
     def clean(self):
         super().clean()
