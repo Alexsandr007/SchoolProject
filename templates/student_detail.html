@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ student.school_class }}</h1>
+<h2>{{ student.name }}</h2>
+{% if student.test == NONE %}
+<p>Email: {{ student.test }}</p>
+{% else %}
+<p>Пока тестов не добавлено</p>
+{% endif %}
+<!-- Добавьте другие поля модели Student, которые вы хотите отобразить -->
+{% endblock %}

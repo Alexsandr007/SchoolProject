@@ -7,20 +7,16 @@ from .models import Teacher
 
 def login_teacher(request):
     if request.method == 'POST':
-        form = TeacherCreationForm(request.POST)
+        form = LoginForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
-            if user is not None:
+            if user:
                 login(request, user)
-                return redirect('success_page')  # Перенаправляем на страницу успешной авторизации
-            else:
-                # Обработка ошибки авторизации
-                return render(request, 'login.html', {'form': form, 'error_message': 'Неверные учетные данные'})
+                return redirect('home')
     else:
-        form = TeacherCreationForm()
-
+        form = LoginForm()
     return render(request, 'login.html', {'form': form})
 
 

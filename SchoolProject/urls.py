@@ -23,4 +23,9 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('admin/', admin.site.urls),
     path('authorization/', include('authorization.urls')),
+    path('list/students/', views.student_list_and_register, name='student_list'),
+    path('list/students/<int:student_id>/', views.student_detail, name='student_detail'),
+    path('create/test/', views.create_test, name='create_test'),
+    path('get_tests/', views.get_tests, name='get_tests'),
+    path('get_questions/', views.get_questions, name='get_questions'),
 ]

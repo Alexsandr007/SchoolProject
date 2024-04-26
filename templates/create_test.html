@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+<form>
+    {% csrf_token %}
+    {{ testForm.as_p }}
+    <button type="submit">Отправить</button>
+</form>
+<form>
+    {% csrf_token %}
+    {{ questionForm.as_p }}
+    <button type="submit">Отправить</button>
+</form>
+<button id="get-data-button">Get Data</button>
+<div id="data-container"></div>
+{% endblock %}
+{% block script %}
+<script>
+    function get_questions() {
+    $.ajax({
+            url: '/get_questions/',
+            type: 'GET',
+            success: function(response) {
+                // Обработка данных из базы данных
+                response.forEach(function(item) {
+                    $('#data-container').append('<p>' + item.text + '</p>');
+                });
+            },
+            error: function(xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+}
+$(document).ready(function() {
+    $('#get-data-button').click(function() {
+        $.ajax({
+            url: '/get_tests/',
+            type: 'GET',
+            success: function(response) {
+                // Обработка данных из базы данных
+                response.forEach(function(item) {
+                    $('#data-container').append('<p>' + item.name + '</p>');
+                    get_questions();
+                });
+            },
+            error: function(xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+
+
+
