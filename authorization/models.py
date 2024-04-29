@@ -3,8 +3,18 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.db import models
 from SchoolProject.models import Student
+from django.contrib.auth.models import User
+
 
 class UserManager(BaseUserManager):
+    def authenticate(self, request, username=None, password=None):
+        try:
+            teacher = Teacher.objects.get(username=username)
+            if teacher.password == password:
+                return teacher
+        except self.model.DoesNotExist:
+            return None
+
     def create_user(self, username, email, password=None):
         if not username:
             raise ValueError('The Username field must be set')
@@ -13,13 +23,13 @@ class UserManager(BaseUserManager):
         if not password:
             raise ValueError('The Password field must be set')
 
-        user = self.model(
+        teacher = self.model(
             username=self.normalize_username(username),
             email=self.normalize_email(email),
         )
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
+        teacher.set_password(password)
+        teacher.save(using=self._db)
+        return teacher
 
     def create_superuser(self, username, email, password=None):
         user = self.create_user(

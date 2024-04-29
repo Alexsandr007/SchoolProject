@@ -1,13 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
-<form>
+<form method="post">
     {% csrf_token %}
     {{ testForm.as_p }}
+    <input type="hidden" name="form_id" value="test">
     <button type="submit">Отправить</button>
 </form>
-<form>
+<form method="post">
     {% csrf_token %}
     {{ questionForm.as_p }}
+    <input type="hidden" name="form_id" value="question">
     <button type="submit">Отправить</button>
 </form>
 <button id="get-data-button">Get Data</button>
@@ -15,9 +17,9 @@
 {% endblock %}
 {% block script %}
 <script>
-    function get_questions() {
+    function get_questions(id) {
     $.ajax({
-            url: '/get_questions/',
+            url: '/get_questions/'+ id + '/',
             type: 'GET',
             success: function(response) {
                 // Обработка данных из базы данных
@@ -39,7 +41,7 @@ $(document).ready(function() {
                 // Обработка данных из базы данных
                 response.forEach(function(item) {
                     $('#data-container').append('<p>' + item.name + '</p>');
-                    get_questions();
+                    get_questions(item.id);
                 });
             },
             error: function(xhr, errmsg, err) {
